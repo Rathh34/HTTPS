@@ -7,7 +7,7 @@
 
 class UInputMappingContext;
 class UInputAction;
-class AHTTPSCameraManager;
+class AHTTPSCameraPawn;
 
 UCLASS()
 class HTTPS_API AHTTPSPlayerController : public APlayerController
@@ -31,6 +31,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> IA_CameraZoom;
 
+	// middle mouse hold
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> IA_CameraRotate;
 
@@ -50,12 +51,11 @@ private:
 	void OnSelectReleased(const FInputActionValue& Value);
 	void OnCancel(const FInputActionValue& Value);
 
+	AHTTPSCameraPawn* GetCameraPawn() const;
+
 	bool bIsSelecting = false;
 	bool bIsRotating = false;
 	FVector2D SelectionStart;
 	FVector2D CameraMoveInput;
-	FVector2D LastMousePos;
-
-	UPROPERTY()
-	TObjectPtr<AHTTPSCameraManager> CamManager;
+	FVector2D LastMousePos; // used to compute rotation delta in Tick
 };

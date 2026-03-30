@@ -1,49 +1,56 @@
 ﻿#pragma once
- 
+
 #include "CoreMinimal.h"
-#include "Camera/PlayerCameraManager.h"
-#include "HTTPSCameraManager.generated.h"
- 
+#include "GameFramework/Pawn.h"
+#include "HTTPSCameraPawn.generated.h"
+
+class USpringArmComponent;
+class UCameraComponent;
+
 UCLASS()
-class HTTPS_API AHTTPSCameraManager : public APlayerCameraManager
+class HTTPS_API AHTTPSCameraPawn : public APawn
 {
 	GENERATED_BODY()
- 
+
 public:
-	AHTTPSCameraManager();
- 
-	virtual void UpdateCamera(float DeltaTime) override;
- 
+	AHTTPSCameraPawn();
+
 	void MoveCamera(FVector2D Direction, float DeltaTime);
 	void ZoomCamera(float Value);
 	void RotateCamera(FVector2D MouseDelta);
- 
+
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	float MoveSpeed = 1200.f;
- 
+
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	float EdgeScrollThreshold = 20.f;
- 
+
+	// zoom = spring arm length
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	float ZoomSpeed = 200.f;
- 
+
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	float MinZoom = 400.f;
- 
+
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	float MaxZoom = 3000.f;
- 
+
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	float RotateSpeed = 0.3f;
- 
+
+	virtual void Tick(float DeltaTime) override;
+
 protected:
-	virtual void UpdateViewTargetInternal(FTViewTarget& OutVT, float DeltaTime) override;
- 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<USceneComponent> RootScene;
+
+	// yaw on root, pitch on arm
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<USpringArmComponent> SpringArm;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UCameraComponent> Camera;
+
 private:
-	float CurrentZoom = 1400.f;
-	FVector CameraPosition = FVector(0.f, 0.f, 1400.f);
-	float CameraYaw = 0.f;
-	float CameraPitch = -50.f;
- 
 	void HandleEdgeScroll(float DeltaTime);
 };

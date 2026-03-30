@@ -30,9 +30,18 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	EGamePhase CurrentPhase = EGamePhase::Setup;
 
+	UPROPERTY(BlueprintReadOnly)
+	int32 CurrentWeek = 0;
+
 	UFUNCTION(BlueprintCallable)
 	void AddPopulation(int32 Amount);
 
 	UFUNCTION(BlueprintCallable)
 	void ModifyReputation(float Delta);
+
+	UFUNCTION(BlueprintCallable)
+	void AdvanceWeek();
+
+	UFUNCTION(BlueprintCallable)
+	void SetPhase(EGamePhase NewPhase);
 };

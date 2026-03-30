@@ -11,6 +11,4 @@ class HTTPS_API AHTTPSGameMode : public AGameModeBase
 
 public:
 	AHTTPSGameMode();
-
-	virtual void BeginPlay() override;
 };
