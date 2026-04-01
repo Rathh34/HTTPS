@@ -7,8 +7,6 @@
 class AColonist;
 class AWorkforceManager;
 
-// runs a weekly timer and sends colonists based on current reputation
-// place one in the level and hook up the WorkforceManager ref
 UCLASS()
 class HTTPS_API AColonistSpawner : public AActor
 {
@@ -17,13 +15,7 @@ class HTTPS_API AColonistSpawner : public AActor
 public:
 	AColonistSpawner();
 
-	virtual void BeginPlay() override;
-
-	// how many real seconds = one in-game week
-	UPROPERTY(EditAnywhere, Category = "Spawner")
-	float WeekDuration = 60.f;
-
-	// base arrivals per week at exactly 50 reputation
+	// base arrivals per week at 50 reputation — scales linearly
 	UPROPERTY(EditAnywhere, Category = "Spawner")
 	int32 BaseWeeklyArrivals = 10;
 
@@ -33,9 +25,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Spawner")
 	TObjectPtr<AWorkforceManager> WorkforceManager;
 
-private:
-	FTimerHandle WeekTimerHandle;
-
+	// called by WeekManager each week
+	UFUNCTION(BlueprintCallable)
 	void OnWeekElapsed();
-	int32 CalculateArrivals() const; // scales linearly with reputation
+
+private:
+	int32 CalculateArrivals() const;
 };

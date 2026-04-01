@@ -23,10 +23,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	EColonistState State = EColonistState::Idle;
 
-	UPROPERTY(BlueprintReadOnly)
-	FString ColonistName;
-
-	// what building/node this colonist is currently working at
+	// what building/node this colonist is working at
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<AActor> AssignedWorkplace = nullptr;
 

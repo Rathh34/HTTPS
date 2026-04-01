@@ -5,7 +5,6 @@
 #include "ResourceType.h"
 #include "ResourceManager.generated.h"
 
-// fired whenever any resource amount changes — UI binds to this
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnResourceChanged, EResourceType, Type, float, NewAmount);
 
 UCLASS()
@@ -22,7 +21,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddResource(EResourceType Type, float Amount);
 
-	// returns false if not enough, doesn't consume anything in that case
+	// returns false and consumes nothing if not enough
 	UFUNCTION(BlueprintCallable)
 	bool ConsumeResource(EResourceType Type, float Amount);
 

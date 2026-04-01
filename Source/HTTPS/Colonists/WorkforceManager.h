@@ -6,7 +6,6 @@
 
 class AColonist;
 
-// fired when idle count changes — UI binds to this to show available workers
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWorkforceChanged, int32, IdleCount);
 
 UCLASS()
@@ -20,15 +19,15 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnWorkforceChanged OnWorkforceChanged;
 
-	// called by ColonistSpawner when new colonists arrive
+	// called by ColonistSpawner each week
 	UFUNCTION(BlueprintCallable)
 	void RegisterColonist(AColonist* Colonist);
 
-	// assigns the first available idle colonist to a workplace, returns false if none
+	// assigns the first idle colonist to a workplace, returns false if none available
 	UFUNCTION(BlueprintCallable)
 	bool AssignColonistTo(AActor* Workplace);
 
-	// frees all colonists working at the given workplace
+	// frees all colonists assigned to the given workplace
 	UFUNCTION(BlueprintCallable)
 	void UnassignFromWorkplace(AActor* Workplace);
 
