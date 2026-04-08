@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -28,7 +28,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Reputation")
 	TObjectPtr<AResourceManager> ResourceManager;
 
-	// called by WeekManager each week
 	UFUNCTION(BlueprintCallable)
 	void OnWeekPassed();
 

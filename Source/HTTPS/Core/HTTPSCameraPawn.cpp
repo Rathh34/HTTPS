@@ -1,4 +1,4 @@
-﻿#include "HTTPSCameraPawn.h"
+#include "HTTPSCameraPawn.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -15,9 +15,9 @@ AHTTPSCameraPawn::AHTTPSCameraPawn()
 	SpringArm->TargetArmLength = 1400.f;
 	SpringArm->SetRelativeRotation(FRotator(-50.f, 0.f, 0.f));
 	SpringArm->bDoCollisionTest = false;
-	SpringArm->bInheritPitch = false; // pitch is set manually
-	SpringArm->bInheritRoll = false;
-	SpringArm->bInheritYaw = true;
+	SpringArm->bInheritPitch   = false; // pitch set manually via RotateCamera
+	SpringArm->bInheritRoll    = false;
+	SpringArm->bInheritYaw     = true;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
@@ -31,26 +31,20 @@ void AHTTPSCameraPawn::Tick(float DeltaTime)
 
 void AHTTPSCameraPawn::MoveCamera(FVector2D Direction, float DeltaTime)
 {
-	// rotate input by yaw so movement is always relative to camera facing
+	// rotate input by yaw so WASD always moves relative to camera facing
 	const float Yaw = SpringArm->GetComponentRotation().Yaw;
-	FVector WorldDir = FRotator(0.f, Yaw, 0.f).RotateVector(
-		FVector(Direction.Y, Direction.X, 0.f)
-	);
+	FVector WorldDir = FRotator(0.f, Yaw, 0.f).RotateVector(FVector(Direction.Y, Direction.X, 0.f));
 	AddActorWorldOffset(WorldDir * MoveSpeed * DeltaTime);
 }
 
 void AHTTPSCameraPawn::ZoomCamera(float Value)
 {
-	SpringArm->TargetArmLength = FMath::Clamp(
-		SpringArm->TargetArmLength - Value * ZoomSpeed,
-		MinZoom,
-		MaxZoom
-	);
+	SpringArm->TargetArmLength = FMath::Clamp(SpringArm->TargetArmLength - Value * ZoomSpeed, MinZoom, MaxZoom);
 }
 
 void AHTTPSCameraPawn::RotateCamera(FVector2D MouseDelta)
 {
-	// yaw rotates the root so MoveCamera stays consistent
+	// yaw on root keeps move direction consistent after rotating
 	FRotator NewRot = GetActorRotation();
 	NewRot.Yaw += MouseDelta.X * RotateSpeed;
 	SetActorRotation(NewRot);
@@ -73,10 +67,9 @@ void AHTTPSCameraPawn::HandleEdgeScroll(float DeltaTime)
 
 	FVector2D Dir = FVector2D::ZeroVector;
 
-	if (MouseX <= EdgeScrollThreshold) Dir.X = -1.f;
-	else if (MouseX >= SizeX - EdgeScrollThreshold) Dir.X = 1.f;
-
-	if (MouseY <= EdgeScrollThreshold) Dir.Y = 1.f;
+	if      (MouseX <= EdgeScrollThreshold)         Dir.X = -1.f;
+	else if (MouseX >= SizeX - EdgeScrollThreshold) Dir.X =  1.f;
+	if      (MouseY <= EdgeScrollThreshold)         Dir.Y =  1.f;
 	else if (MouseY >= SizeY - EdgeScrollThreshold) Dir.Y = -1.f;
 
 	if (!Dir.IsZero())

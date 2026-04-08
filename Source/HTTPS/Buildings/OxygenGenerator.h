@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -7,6 +7,7 @@
 
 class UDomeComponent;
 
+// core building — dome is attached here, destroying this = game over
 UCLASS()
 class HTTPS_API AOxygenGenerator : public AActor, public IDamageable
 {

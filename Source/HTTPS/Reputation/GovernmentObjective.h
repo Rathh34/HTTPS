@@ -1,7 +1,7 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
-#include "HTTPS/Resources/ResourceType.h"
+#include "Resources/ResourceType.h"
 #include "GovernmentObjective.generated.h"
 
 UENUM(BlueprintType)
@@ -23,7 +23,7 @@ struct FGovernmentObjective
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText Description;
 
-	// target value (population, resource amount, or reputation floor)
+	// population count, resource amount, or rep floor depending on Type
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float TargetValue = 0.f;
 
@@ -36,7 +36,7 @@ struct FGovernmentObjective
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float ReputationPenalty = -15.f;
 
-	// weeks from issue date to deadline
+	// weeks from issue date until deadline
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 WeekDeadline = 4;
 

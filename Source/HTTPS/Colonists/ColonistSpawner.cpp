@@ -1,4 +1,4 @@
-﻿#include "ColonistSpawner.h"
+#include "ColonistSpawner.h"
 #include "Colonist.h"
 #include "WorkforceManager.h"
 #include "Core/HTTPSGameState.h"
@@ -20,10 +20,7 @@ void AColonistSpawner::OnWeekElapsed()
 		FActorSpawnParameters Params;
 		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		AColonist* NewColonist = GetWorld()->SpawnActor<AColonist>(
-			ColonistClass, GetActorLocation(), FRotator::ZeroRotator, Params
-		);
-
+		AColonist* NewColonist = GetWorld()->SpawnActor<AColonist>(ColonistClass, GetActorLocation(), FRotator::ZeroRotator, Params);
 		if (NewColonist)
 			WorkforceManager->RegisterColonist(NewColonist);
 	}
@@ -36,6 +33,7 @@ void AColonistSpawner::OnWeekElapsed()
 
 int32 AColonistSpawner::CalculateArrivals() const
 {
+	// 0 rep = nobody, 50 = base, 100 = 2x
 	AHTTPSGameState* GS = GetWorld()->GetGameState<AHTTPSGameState>();
 	const float Rep = GS ? GS->Reputation : 50.f;
 	return FMath::Max(0, FMath::RoundToInt(BaseWeeklyArrivals * (Rep / 50.f)));

@@ -74,3 +74,5 @@ DerivedDataCache/*
 
 *.pdb
 /.idea
+codebase_dump.txt
+codebase_dump.txt

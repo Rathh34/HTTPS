@@ -1,4 +1,4 @@
-﻿#include "HTTPSGameState.h"
+#include "HTTPSGameState.h"
 
 AHTTPSGameState::AHTTPSGameState()
 {

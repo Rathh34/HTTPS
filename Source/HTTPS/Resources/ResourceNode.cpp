@@ -1,5 +1,5 @@
-﻿#include "ResourceNode.h"
-#include "HTTPS/Colonists/Colonist.h"
+#include "ResourceNode.h"
+#include "Colonists/Colonist.h"
 
 AResourceNode::AResourceNode()
 {
@@ -18,11 +18,8 @@ void AResourceNode::Tick(float DeltaTime)
 
 	if (AssignedWorkers.IsEmpty() || CurrentReserve <= 0.f || !ResourceManager) return;
 
-	const float Amount = FMath::Min(
-		YieldPerWorkerPerSecond * AssignedWorkers.Num() * DeltaTime,
-		CurrentReserve
-	);
-
+	// cap extraction so we dont go negative
+	const float Amount = FMath::Min(YieldPerWorkerPerSecond * AssignedWorkers.Num() * DeltaTime, CurrentReserve);
 	CurrentReserve -= Amount;
 	ResourceManager->AddResource(ResourceType, Amount);
 }

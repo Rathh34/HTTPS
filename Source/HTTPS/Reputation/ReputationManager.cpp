@@ -1,6 +1,6 @@
-﻿#include "ReputationManager.h"
-#include "HTTPS/Core/HTTPSGameState.h"
-#include "HTTPS/Resources/ResourceManager.h"
+#include "ReputationManager.h"
+#include "Core/HTTPSGameState.h"
+#include "Resources/ResourceManager.h"
 
 AReputationManager::AReputationManager()
 {
@@ -64,26 +64,27 @@ void AReputationManager::IssueNewObjective()
 	AHTTPSGameState* GS = GetWorld()->GetGameState<AHTTPSGameState>();
 	if (!GS) return;
 
-	WeekIssuedOn = GS->CurrentWeek;
+	WeekIssuedOn     = GS->CurrentWeek;
 	CurrentObjective = FGovernmentObjective();
 
+	// random pick from 3 types for now — could weight these later
 	const int32 Roll = FMath::RandRange(0, 2);
 	if (Roll == 0)
 	{
-		CurrentObjective.Type = EObjectiveType::ReachPopulation;
+		CurrentObjective.Type        = EObjectiveType::ReachPopulation;
 		CurrentObjective.TargetValue = GS->Population + 50.f;
 		CurrentObjective.Description = FText::FromString(TEXT("Grow population by 50"));
 	}
 	else if (Roll == 1)
 	{
-		CurrentObjective.Type = EObjectiveType::ProduceResource;
+		CurrentObjective.Type         = EObjectiveType::ProduceResource;
 		CurrentObjective.ResourceType = EResourceType::Metal;
-		CurrentObjective.TargetValue = 500.f;
-		CurrentObjective.Description = FText::FromString(TEXT("Stockpile 500 Metal"));
+		CurrentObjective.TargetValue  = 500.f;
+		CurrentObjective.Description  = FText::FromString(TEXT("Stockpile 500 Metal"));
 	}
 	else
 	{
-		CurrentObjective.Type = EObjectiveType::MaintainReputation;
+		CurrentObjective.Type        = EObjectiveType::MaintainReputation;
 		CurrentObjective.TargetValue = 40.f;
 		CurrentObjective.Description = FText::FromString(TEXT("Keep reputation above 40"));
 	}

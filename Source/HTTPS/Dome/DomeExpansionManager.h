@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -21,7 +21,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Dome")
 	float ExpansionRadiusIncrease = 500.f;
 
-	// assign in editor — points to the OxygenGenerator's DomeComponent
+	// points to OxygenGenerator's DomeComponent
 	UPROPERTY(EditAnywhere, Category = "Dome")
 	TObjectPtr<UDomeComponent> Dome;
 

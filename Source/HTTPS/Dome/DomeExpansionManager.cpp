@@ -1,7 +1,7 @@
-﻿#include "DomeExpansionManager.h"
+#include "DomeExpansionManager.h"
 #include "DomeComponent.h"
-#include "HTTPS/Resources/ResourceManager.h"
-#include "HTTPS/Resources/ResourceType.h"
+#include "Resources/ResourceManager.h"
+#include "Resources/ResourceType.h"
 
 ADomeExpansionManager::ADomeExpansionManager()
 {

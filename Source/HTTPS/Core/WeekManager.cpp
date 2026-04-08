@@ -1,4 +1,4 @@
-﻿#include "WeekManager.h"
+#include "WeekManager.h"
 #include "HTTPSGameState.h"
 #include "Colonists/ColonistSpawner.h"
 #include "Reputation/ReputationManager.h"
@@ -16,13 +16,7 @@ void AWeekManager::BeginPlay()
 	if (AHTTPSGameState* GS = GetWorld()->GetGameState<AHTTPSGameState>())
 		GS->SetPhase(EGamePhase::Playing);
 
-	GetWorldTimerManager().SetTimer(
-		WeekTimerHandle,
-		this,
-		&AWeekManager::OnWeekElapsed,
-		WeekDuration,
-		true
-	);
+	GetWorldTimerManager().SetTimer(WeekTimerHandle, this, &AWeekManager::OnWeekElapsed, WeekDuration, true);
 }
 
 void AWeekManager::OnWeekElapsed()
@@ -30,6 +24,7 @@ void AWeekManager::OnWeekElapsed()
 	AHTTPSGameState* GS = GetWorld()->GetGameState<AHTTPSGameState>();
 	if (!GS) return;
 
+	// stop ticking once the game ends
 	if (GS->CurrentPhase == EGamePhase::Win || GS->CurrentPhase == EGamePhase::Lose)
 	{
 		GetWorldTimerManager().ClearTimer(WeekTimerHandle);
@@ -38,11 +33,8 @@ void AWeekManager::OnWeekElapsed()
 
 	GS->AdvanceWeek();
 
-	if (ColonistSpawner)
-		ColonistSpawner->OnWeekElapsed();
-
-	if (ReputationManager)
-		ReputationManager->OnWeekPassed();
+	if (ColonistSpawner)   ColonistSpawner->OnWeekElapsed();
+	if (ReputationManager) ReputationManager->OnWeekPassed();
 
 	OnWeekPassed.Broadcast(GS->CurrentWeek);
 }

@@ -1,10 +1,10 @@
-﻿#include "ResourceManager.h"
+#include "ResourceManager.h"
 
 AResourceManager::AResourceManager()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	// pre-populate so we never get a missing key on Get
+	// pre-populate all keys so Get never returns a missing entry
 	for (uint8 i = 0; i <= (uint8)EResourceType::ResearchPoints; i++)
 		Resources.Add((EResourceType)i, 0.f);
 }

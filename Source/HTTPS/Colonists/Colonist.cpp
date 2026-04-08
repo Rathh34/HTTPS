@@ -1,4 +1,4 @@
-﻿#include "Colonist.h"
+#include "Colonist.h"
 
 AColonist::AColonist()
 {

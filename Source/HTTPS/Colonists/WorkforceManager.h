@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -19,15 +19,13 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnWorkforceChanged OnWorkforceChanged;
 
-	// called by ColonistSpawner each week
 	UFUNCTION(BlueprintCallable)
 	void RegisterColonist(AColonist* Colonist);
 
-	// assigns the first idle colonist to a workplace, returns false if none available
+	// assigns first idle colonist to Workplace, returns false if none available
 	UFUNCTION(BlueprintCallable)
 	bool AssignColonistTo(AActor* Workplace);
 
-	// frees all colonists assigned to the given workplace
 	UFUNCTION(BlueprintCallable)
 	void UnassignFromWorkplace(AActor* Workplace);
 
@@ -37,6 +35,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	int32 GetTotalCount() const { return AllColonists.Num(); }
 
+	// @note: returns raw ptrs — cant expose TObjectPtr to UHT
 	UFUNCTION(BlueprintPure)
 	TArray<AColonist*> GetAllColonists() const;
 

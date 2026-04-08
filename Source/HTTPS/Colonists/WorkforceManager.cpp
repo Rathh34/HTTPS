@@ -1,4 +1,4 @@
-﻿#include "WorkforceManager.h"
+#include "WorkforceManager.h"
 #include "Colonist.h"
 
 AWorkforceManager::AWorkforceManager()
@@ -25,10 +25,9 @@ bool AWorkforceManager::AssignColonistTo(AActor* Workplace)
 void AWorkforceManager::UnassignFromWorkplace(AActor* Workplace)
 {
 	for (AColonist* C : AllColonists)
-	{
 		if (C && C->AssignedWorkplace == Workplace)
 			C->Unassign();
-	}
+
 	OnWorkforceChanged.Broadcast(GetIdleCount());
 }
 

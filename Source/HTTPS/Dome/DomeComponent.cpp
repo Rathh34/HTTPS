@@ -1,10 +1,8 @@
-﻿#include "DomeComponent.h"
+#include "DomeComponent.h"
 #include "Core/HTTPSGameState.h"
-#include "Kismet/GameplayStatics.h"
 
 UDomeComponent::UDomeComponent()
 {
-
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
@@ -12,6 +10,7 @@ void UDomeComponent::OnRegister()
 {
 	Super::OnRegister();
 
+	// safe here — would crash in constructor in UE5.7
 	SetSphereRadius(1500.f);
 	SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SetCollisionResponseToAllChannels(ECR_Ignore);
@@ -27,11 +26,8 @@ void UDomeComponent::TakeDomeDamage(float Amount)
 
 	if (IsDestroyed())
 	{
-		if (UWorld* World = GetWorld())
-		{
-			if (AHTTPSGameState* GS = World->GetGameState<AHTTPSGameState>())
-				GS->SetPhase(EGamePhase::Lose);
-		}
+		if (AHTTPSGameState* GS = GetWorld()->GetGameState<AHTTPSGameState>())
+			GS->SetPhase(EGamePhase::Lose);
 
 		OnDomeDestroyed.Broadcast();
 		UE_LOG(LogTemp, Warning, TEXT("[Dome] Dome destroyed — game over."));

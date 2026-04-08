@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "ResourceType.generated.h"
@@ -10,6 +10,6 @@ enum class EResourceType : uint8
 	Power,
 	Food,
 	Metal,
-	RareMineral,
+	RareMineral,   // used for dome expansion
 	ResearchPoints
 };

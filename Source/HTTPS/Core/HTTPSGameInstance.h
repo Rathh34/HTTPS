@@ -1,10 +1,10 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "HTTPSGameInstance.generated.h"
 
-// persists across level loads (main menu -> planet)
+// persists across level loads
 UCLASS()
 class HTTPS_API UHTTPSGameInstance : public UGameInstance
 {

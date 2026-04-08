@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -15,7 +15,7 @@ class HTTPS_API AColonistSpawner : public AActor
 public:
 	AColonistSpawner();
 
-	// base arrivals per week at 50 reputation — scales linearly
+	// arrivals at rep 50 — scales linearly, 0 rep = 0 arrivals, 100 rep = 2x
 	UPROPERTY(EditAnywhere, Category = "Spawner")
 	int32 BaseWeeklyArrivals = 10;
 
@@ -25,7 +25,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Spawner")
 	TObjectPtr<AWorkforceManager> WorkforceManager;
 
-	// called by WeekManager each week
 	UFUNCTION(BlueprintCallable)
 	void OnWeekElapsed();
 

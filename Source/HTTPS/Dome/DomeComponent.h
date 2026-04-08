@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "Components/SphereComponent.h"
@@ -6,6 +6,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDomeDestroyed);
 
+// attached to OxygenGenerator — defines liveable area and tracks dome health
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class HTTPS_API UDomeComponent : public USphereComponent
 {
@@ -14,6 +15,7 @@ class HTTPS_API UDomeComponent : public USphereComponent
 public:
 	UDomeComponent();
 
+	// collision setup cant go in constructor — crashes in UE5.7 with NewObject
 	virtual void OnRegister() override;
 
 	UPROPERTY(BlueprintAssignable)

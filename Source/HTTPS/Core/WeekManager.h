@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -9,8 +9,7 @@ class AReputationManager;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeekPassed, int32, WeekNumber);
 
-// owns the week timer and calls everything in the right order each week
-// place one in the level and wire up the refs
+// owns the week timer — place one in the level and wire up refs
 UCLASS()
 class HTTPS_API AWeekManager : public AActor
 {
@@ -24,7 +23,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnWeekPassed OnWeekPassed;
 
-	// how many real seconds = one in-game week
+	// real seconds per in-game week
 	UPROPERTY(EditAnywhere, Category = "Week")
 	float WeekDuration = 60.f;
 
@@ -36,6 +35,5 @@ public:
 
 private:
 	FTimerHandle WeekTimerHandle;
-
 	void OnWeekElapsed();
 };

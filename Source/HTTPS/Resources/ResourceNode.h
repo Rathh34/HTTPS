@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -30,7 +30,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Resource")
 	float MaxReserve = 5000.f;
 
-	// place this in the level and assign it
 	UPROPERTY(EditAnywhere, Category = "Resource")
 	TObjectPtr<AResourceManager> ResourceManager;
 

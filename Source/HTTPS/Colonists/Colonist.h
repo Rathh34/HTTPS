@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -23,7 +23,6 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	EColonistState State = EColonistState::Idle;
 
-	// what building/node this colonist is working at
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<AActor> AssignedWorkplace = nullptr;
 

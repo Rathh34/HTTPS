@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
@@ -8,6 +8,7 @@
 class UInputMappingContext;
 class UInputAction;
 class AHTTPSCameraPawn;
+class UMainHUDWidget;
 
 UCLASS()
 class HTTPS_API AHTTPSPlayerController : public APlayerController
@@ -16,6 +17,9 @@ class HTTPS_API AHTTPSPlayerController : public APlayerController
 
 public:
 	AHTTPSPlayerController();
+
+	UFUNCTION(BlueprintPure)
+	UMainHUDWidget* GetMainHUD() const { return MainHUDWidget; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -41,6 +45,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> IA_Cancel;
 
+	// set in BP subclass to WBP_MainHUD
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UMainHUDWidget> MainHUDClass;
+
 private:
 	void OnCameraMove(const FInputActionValue& Value);
 	void OnCameraMoveCompleted(const FInputActionValue& Value);
@@ -53,9 +61,12 @@ private:
 
 	AHTTPSCameraPawn* GetCameraPawn() const;
 
+	UPROPERTY()
+	TObjectPtr<UMainHUDWidget> MainHUDWidget;
+
 	bool bIsSelecting = false;
-	bool bIsRotating = false;
+	bool bIsRotating  = false;
 	FVector2D SelectionStart;
 	FVector2D CameraMoveInput;
-	FVector2D LastMousePos; // used to compute rotation delta in Tick
+	FVector2D LastMousePos; // rotation polls delta in Tick
 };

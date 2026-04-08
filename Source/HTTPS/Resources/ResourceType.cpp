@@ -1,1 +1,1 @@
-﻿#include "ResourceType.h"
+#include "ResourceType.h"
