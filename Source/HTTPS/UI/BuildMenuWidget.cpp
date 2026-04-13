@@ -3,10 +3,20 @@
 
 void UBuildMenuWidget::SelectBuilding(TSubclassOf<ABuildingBase> BuildingClass)
 {
-	if (!BuildingClass) return;
+	if (!BuildingClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[BuildMenu] SelectBuilding called with null BuildingClass"));
+		return;
+	}
 
-	if (PlacementSystem)
-		PlacementSystem->StartPlacement(BuildingClass);
+	if (!PlacementSystem)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[BuildMenu] PlacementSystem is null — not set in Event Construct"));
+		return;
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("[BuildMenu] Starting placement for %s"), *BuildingClass->GetName());
+	PlacementSystem->StartPlacement(BuildingClass);
 
 	OnBuildingSelected.Broadcast(BuildingClass);
 	SetOpen(false);
