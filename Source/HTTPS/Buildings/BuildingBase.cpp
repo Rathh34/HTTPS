@@ -1,61 +1,67 @@
 #include "BuildingBase.h"
-#include "Colonists/Colonist.h"
+#include "HealthComponent.h"
+#include "DroneComponent.h"
+#include "EnergyComponent.h"
+#include "HTTPSGameInstance.h"
 
 ABuildingBase::ABuildingBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComp"));
+	DroneComp  = CreateDefaultSubobject<UDroneComponent>(TEXT("DroneComp"));
+	EnergyComp = CreateDefaultSubobject<UEnergyComponent>(TEXT("EnergyComp"));
 }
 
 void ABuildingBase::BeginPlay()
 {
 	Super::BeginPlay();
-	CurrentHealth = MaxHealth;
-	SetState(EBuildingState::Operational); // skipping constructing phase for now
-}
 
-void ABuildingBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+	HealthComp->OnDied.AddDynamic(this, &ABuildingBase::OnDied);
 
-	if (IsOperational() && AssignedWorkers.Num() > 0)
-		OnOperationalTick(DeltaTime);
-}
-
-bool ABuildingBase::AssignWorker(AColonist* Colonist)
-{
-	if (!Colonist || AssignedWorkers.Num() >= MaxWorkers) return false;
-	AssignedWorkers.AddUnique(Colonist);
-	Colonist->AssignTo(this);
-	OnWorkerChanged.Broadcast(Colonist, true);
-	return true;
-}
-
-void ABuildingBase::RemoveWorker(AColonist* Colonist)
-{
-	if (!Colonist) return;
-	AssignedWorkers.Remove(Colonist);
-	Colonist->Unassign();
-	OnWorkerChanged.Broadcast(Colonist, false);
-}
-
-void ABuildingBase::ApplyDamage_Implementation(float Amount, AActor* DamageSource)
-{
-	if (State == EBuildingState::Destroyed) return;
-
-	CurrentHealth = FMath::Max(0.f, CurrentHealth - Amount);
-
-	if (CurrentHealth <= 0.f)
+	// apply data asset values to components
+	if (BuildingData)
 	{
-		SetState(EBuildingState::Destroyed);
-		// kick everyone out before the building goes down
-		for (AColonist* C : AssignedWorkers)
-			if (C) C->Unassign();
-		AssignedWorkers.Empty();
+		HealthComp->MaxHealth     = BuildingData->MaxHealth;
+		DroneComp->MaxDrones      = BuildingData->MaxDrones;
+		EnergyComp->EnergyDelta   = BuildingData->EnergyDelta;
 	}
-	else if (CurrentHealth < MaxHealth * 0.5f)
+}
+
+void ABuildingBase::EndPlay(const EEndPlayReason::Type Reason)
+{
+	// free grid tiles on destroy
+	if (UHTTPSGameInstance* GI = GetGameInstance<UHTTPSGameInstance>())
+		GI->FreeTiles(GridOrigin, GridFootprint);
+
+	// housing capacity cleanup handled by subclasses
+	Super::EndPlay(Reason);
+}
+
+void ABuildingBase::OnPlaced(FIntPoint Origin, bool bInRotated)
+{
+	GridOrigin = Origin;
+	bRotated   = bInRotated;
+
+	if (BuildingData)
 	{
-		SetState(EBuildingState::Damaged);
+		GridFootprint = bRotated ?
+			FIntPoint(BuildingData->FootprintSize.Y, BuildingData->FootprintSize.X) :
+			BuildingData->FootprintSize;
 	}
+
+	if (UHTTPSGameInstance* GI = GetGameInstance<UHTTPSGameInstance>())
+		GI->OccupyTiles(GridOrigin, GridFootprint, this);
+
+	// construction skipped for now — go straight to operational
+	// TODO: add construction timer using BuildingData->BuildTime
+	SetOperational();
+}
+
+void ABuildingBase::SetOperational()
+{
+	SetState(EBuildingState::Operational);
+	OnOperational();
 }
 
 void ABuildingBase::SetState(EBuildingState NewState)
@@ -63,4 +69,12 @@ void ABuildingBase::SetState(EBuildingState NewState)
 	if (State == NewState) return;
 	State = NewState;
 	OnStateChanged.Broadcast(NewState);
+}
+
+void ABuildingBase::OnDied()
+{
+	SetState(EBuildingState::Destroyed);
+	DroneComp->UnassignAll();
+	UE_LOG(LogTemp, Log, TEXT("[Building] %s destroyed"), *GetNameSafe(this));
+	Destroy();
 }

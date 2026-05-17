@@ -1,21 +1,15 @@
 #include "EventNotificationWidget.h"
 #include "TimerManager.h"
 
-void UEventNotificationWidget::ShowEvent(const FText& Name, const FText& Description)
+void UEventNotificationWidget::ShowEvent(const FText& Title, const FText& Message)
 {
 	SetVisibility(ESlateVisibility::Visible);
-	OnEventShown(Name, Description);
+	OnEventShown(Title, Message);
 
-	GetWorld()->GetTimerManager().SetTimer(
-		HideTimerHandle,
-		this,
-		&UEventNotificationWidget::HideNotification,
-		DisplayDuration,
-		false
-	);
+	GetWorld()->GetTimerManager().SetTimer(HideTimer, this, &UEventNotificationWidget::Hide, DisplayDuration, false);
 }
 
-void UEventNotificationWidget::HideNotification()
+void UEventNotificationWidget::Hide()
 {
 	SetVisibility(ESlateVisibility::Collapsed);
 }

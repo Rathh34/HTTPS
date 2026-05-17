@@ -1,9 +1,9 @@
 #include "HTTPSPlayerController.h"
 #include "HTTPSCameraPawn.h"
+#include "MainHUDWidget.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Engine/LocalPlayer.h"
-#include "UI/MainHUDWidget.h"
 
 AHTTPSPlayerController::AHTTPSPlayerController()
 {
@@ -94,7 +94,7 @@ void AHTTPSPlayerController::OnSelectPressed(const FInputActionValue& Value)
 
 void AHTTPSPlayerController::OnSelectReleased(const FInputActionValue& Value)
 {
-	// ignore if a rotate drag was in progress
+	// ignore clicks during rotate drag
 	if (!bIsSelecting || bIsRotating) return;
 	bIsSelecting = false;
 
@@ -105,7 +105,7 @@ void AHTTPSPlayerController::OnSelectReleased(const FInputActionValue& Value)
 	{
 		FHitResult Hit;
 		GetHitResultUnderCursor(ECC_Visibility, false, Hit);
-		UE_LOG(LogTemp, Warning, TEXT("Selected: %s"), *GetNameSafe(Hit.GetActor()));
+		UE_LOG(LogTemp, Log, TEXT("[Select] %s"), *GetNameSafe(Hit.GetActor()));
 	}
 	// TODO: box select
 }

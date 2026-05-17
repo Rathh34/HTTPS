@@ -4,7 +4,7 @@
 #include "AIController.h"
 #include "NativeAIController.generated.h"
 
-// runs BT_Native — key names must match the blackboard asset
+// runs BT_Native — blackboard key names must match the BB asset
 UCLASS()
 class HTTPS_API ANativeAIController : public AAIController
 {

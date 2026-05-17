@@ -1,6 +1,7 @@
 #include "BuildingDetailsWidget.h"
-#include "Buildings/BuildingBase.h"
-#include "Colonists/WorkforceManager.h"
+#include "BuildingBase.h"
+#include "DroneComponent.h"
+#include "EnergyComponent.h"
 
 void UBuildingDetailsWidget::ShowBuilding(ABuildingBase* Building)
 {
@@ -17,16 +18,25 @@ void UBuildingDetailsWidget::Hide()
 	OnHide();
 }
 
-void UBuildingDetailsWidget::AssignWorker()
+void UBuildingDetailsWidget::AssignDrone()
 {
-	if (!WorkforceManager || !SelectedBuilding) return;
-	WorkforceManager->AssignColonistTo(SelectedBuilding);
+	if (!SelectedBuilding) return;
+	SelectedBuilding->DroneComp->AssignDrones(1);
 	OnBuildingSet(SelectedBuilding); // refresh BP display
 }
 
-void UBuildingDetailsWidget::UnassignWorker()
+void UBuildingDetailsWidget::UnassignDrone()
 {
-	if (!WorkforceManager || !SelectedBuilding) return;
-	WorkforceManager->UnassignFromWorkplace(SelectedBuilding);
+	if (!SelectedBuilding || SelectedBuilding->DroneComp->AssignedDrones <= 0) return;
+	SelectedBuilding->DroneComp->UnassignAll();
+	// @note: unassigns all for simplicity — TODO: unassign one at a time
+	OnBuildingSet(SelectedBuilding);
+}
+
+void UBuildingDetailsWidget::ToggleEnergy()
+{
+	if (!SelectedBuilding) return;
+	UEnergyComponent* EC = SelectedBuilding->EnergyComp;
+	EC->SetEnergyActive(!EC->bActive);
 	OnBuildingSet(SelectedBuilding);
 }

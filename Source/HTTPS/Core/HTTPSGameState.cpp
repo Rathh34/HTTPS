@@ -1,33 +1,46 @@
 #include "HTTPSGameState.h"
+#include "HTTPSGameInstance.h"
 
 AHTTPSGameState::AHTTPSGameState()
 {
 }
 
-void AHTTPSGameState::AddPopulation(int32 Amount)
+void AHTTPSGameState::BeginPlay()
 {
-	Population += Amount;
-	UE_LOG(LogTemp, Log, TEXT("[GameState] Population: %d"), Population);
-
-	if (Population >= 5000000)
-		SetPhase(EGamePhase::Win);
+	Super::BeginPlay();
+	BindToGameInstance();
 }
 
-void AHTTPSGameState::ModifyReputation(float Delta)
+void AHTTPSGameState::BindToGameInstance()
 {
-	Reputation = FMath::Clamp(Reputation + Delta, 0.f, 100.f);
-	UE_LOG(LogTemp, Log, TEXT("[GameState] Reputation: %.1f"), Reputation);
-}
+	UHTTPSGameInstance* GI = GetGameInstance<UHTTPSGameInstance>();
+	if (!GI) return;
 
-void AHTTPSGameState::AdvanceWeek()
-{
-	CurrentWeek++;
-	UE_LOG(LogTemp, Log, TEXT("[GameState] Week %d"), CurrentWeek);
+	GI->OnPopulationChanged.AddDynamic(this, &AHTTPSGameState::OnPopulationChanged);
+	GI->OnReputationChanged.AddDynamic(this, &AHTTPSGameState::OnReputationChanged);
+	GI->OnTimePassed.AddDynamic(this,        &AHTTPSGameState::OnTimePassed);
 }
 
 void AHTTPSGameState::SetPhase(EGamePhase NewPhase)
 {
-	if (CurrentPhase == NewPhase) return;
-	CurrentPhase = NewPhase;
+	if (Phase == NewPhase) return;
+	Phase = NewPhase;
 	UE_LOG(LogTemp, Warning, TEXT("[GameState] Phase -> %d"), (uint8)NewPhase);
+}
+
+void AHTTPSGameState::OnPopulationChanged(int32 NewPop, int32 HousingCap)
+{
+	Population = NewPop;
+}
+
+void AHTTPSGameState::OnReputationChanged(float NewRep)
+{
+	Reputation = NewRep;
+}
+
+void AHTTPSGameState::OnTimePassed(int32 Day, int32 Week, int32 Month)
+{
+	CurrentDay   = Day;
+	CurrentWeek  = Week;
+	CurrentMonth = Month;
 }

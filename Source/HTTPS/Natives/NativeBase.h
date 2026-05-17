@@ -2,35 +2,32 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Interfaces/IDamageable.h"
-#include "Data/NativeData.h"
 #include "NativeBase.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNativeDied, ANativeBase*, Native);
+class UHealthComponent;
 
+// stats from GDD: 10 PV, 5 dmg, 0.5/s, 600cm/s
 UCLASS()
-class HTTPS_API ANativeBase : public ACharacter, public IDamageable
+class HTTPS_API ANativeBase : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	ANativeBase();
 
-	UPROPERTY(BlueprintAssignable)
-	FOnNativeDied OnDied;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UHealthComponent> HealthComp;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Native")
-	FNativeData Data;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	float AttackDamage = 5.f;
 
-	virtual void ApplyDamage_Implementation(float Amount, AActor* DamageSource) override;
-	virtual float GetCurrentHealth_Implementation() const override { return CurrentHealth; }
-	virtual bool IsAlive_Implementation() const override { return CurrentHealth > 0.f; }
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	float AttackRate = 0.5f; // attacks per second
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
-	float CurrentHealth = 100.f;
-
-	void Die();
+	UFUNCTION()
+	void OnDied();
 };

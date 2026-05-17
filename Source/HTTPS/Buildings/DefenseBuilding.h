@@ -4,7 +4,9 @@
 #include "BuildingBase.h"
 #include "DefenseBuilding.generated.h"
 
-// needs workers to fire — no workers = idle
+class ANativeBase;
+
+// tourelle automatique + canon à plasma both use this
 UCLASS()
 class HTTPS_API ADefenseBuilding : public ABuildingBase
 {
@@ -19,13 +21,20 @@ public:
 	float AttackRange = 1500.f;
 
 	UPROPERTY(EditAnywhere, Category = "Defense")
-	float DamagePerSecond = 15.f;
+	float DamagePerShot = 1.f;
 
 	UPROPERTY(EditAnywhere, Category = "Defense")
-	float FireRate = 1.f;
+	float FireRate = 2.f; // shots per second
+
+	// plasma canon: first hit + penetration damage
+	UPROPERTY(EditAnywhere, Category = "Defense")
+	float PenetrationDamage = 0.f;
+
+protected:
+	virtual void BeginPlay() override;
 
 private:
-	float TimeSinceLastAttack = 0.f;
+	float TimeSinceLastShot = 0.f;
 
-	AActor* FindTargetInRange() const;
+	ANativeBase* FindTargetInRange() const;
 };

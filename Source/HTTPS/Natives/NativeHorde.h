@@ -6,7 +6,6 @@
 
 class ANativeBase;
 
-// spawns and tracks a single wave
 UCLASS()
 class HTTPS_API ANativeHorde : public AActor
 {
@@ -19,13 +18,11 @@ public:
 	TSubclassOf<ANativeBase> NativeClass;
 
 	UPROPERTY(EditAnywhere, Category = "Horde")
-	int32 SpawnCount = 10;
-
-	UPROPERTY(EditAnywhere, Category = "Horde")
 	float SpawnRadius = 400.f;
 
+	// called by GameInstance with the calculated wave size
 	UFUNCTION(BlueprintCallable)
-	void SpawnHorde();
+	void SpawnHorde(int32 Count);
 
 	UFUNCTION(BlueprintPure)
 	bool IsWipedOut() const { return AliveCount <= 0; }
@@ -34,5 +31,5 @@ private:
 	int32 AliveCount = 0;
 
 	UFUNCTION()
-	void OnNativeDied(ANativeBase* Native);
+	void OnNativeDied();
 };

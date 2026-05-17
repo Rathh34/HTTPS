@@ -1,14 +1,23 @@
 #include "MainHUDWidget.h"
-#include "Core/HTTPSGameState.h"
-#include "Resources/ResourceManager.h"
-#include "Resources/ResourceType.h"
-#include "Events/EventBase.h"
+#include "HTTPSGameInstance.h"
 #include "EventNotificationWidget.h"
-#include "ObjectiveTrackerWidget.h"
 
 void UMainHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	BindToGameInstance();
+}
+
+void UMainHUDWidget::BindToGameInstance()
+{
+	UHTTPSGameInstance* GI = GetGameInstance<UHTTPSGameInstance>();
+	if (!GI)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[HUD] GameInstance not found in NativeConstruct"));
+		return;
+	}
+
+	GI->OnWaveStarted.AddDynamic(this, &UMainHUDWidget::OnWaveStarted);
 }
 
 void UMainHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -19,29 +28,41 @@ void UMainHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	if (TimeSinceRefresh < RefreshInterval) return;
 	TimeSinceRefresh = 0.f;
 
-	if (ResourceManager)
+	UHTTPSGameInstance* GI = GetGameInstance<UHTTPSGameInstance>();
+	if (!GI) return;
+
+	RefreshResourceBar(
+		GI->GetResource(EResourceType::Acier),
+		GI->GetResource(EResourceType::Quartz),
+		GI->GetResource(EResourceType::Or),
+		GI->GetResource(EResourceType::Biomasse),
+		GI->GetResource(EResourceType::CadavreAlien)
+	);
+
+	RefreshEnergyBar(GI->TotalEnergyProduction, GI->TotalEnergyConsumption, GI->bBlackout);
+	RefreshDroneBar(GI->TotalDrones, GI->AssignedDrones);
+	RefreshPopulationBar(GI->Population, GI->HousingCapacity, GI->GetHappinessPercent());
+	RefreshDate(GI->CurrentDay, GI->CurrentWeek, GI->CurrentMonth);
+	RefreshReputation(GI->Reputation);
+
+	// blackout flash — only fires on state change
+	if (GI->bBlackout != bWasBlackout)
 	{
-		RefreshResourceDisplay(
-			ResourceManager->GetResource(EResourceType::Metal),
-			ResourceManager->GetResource(EResourceType::Power),
-			ResourceManager->GetResource(EResourceType::Food),
-			ResourceManager->GetResource(EResourceType::Oxygen),
-			ResourceManager->GetResource(EResourceType::RareMineral)
-		);
+		bWasBlackout = GI->bBlackout;
+		if (GI->bBlackout) OnBlackoutStarted();
+		else               OnBlackoutRestored();
 	}
-
-	if (AHTTPSGameState* GS = GetWorld()->GetGameState<AHTTPSGameState>())
-		RefreshPopulationDisplay(GS->Population, GS->Reputation);
 }
 
-void UMainHUDWidget::OnWeekPassed(int32 WeekNumber)
+void UMainHUDWidget::OnWaveStarted(int32 WaveNumber, int32 WaveSize)
 {
-	if (ObjectiveTracker)
-		ObjectiveTracker->RefreshObjective();
-}
-
-void UMainHUDWidget::ShowEventNotification(UEventBase* Event)
-{
-	if (EventNotification && Event)
-		EventNotification->ShowEvent(Event->EventName, Event->EventDescription);
+	if (EventNotification)
+	{
+		const FText Msg = FText::Format(
+			FText::FromString(TEXT("Vague {0} — {1} aliens !")),
+			FText::AsNumber(WaveNumber),
+			FText::AsNumber(WaveSize)
+		);
+		EventNotification->ShowEvent(FText::FromString(TEXT("ATTAQUE")), Msg);
+	}
 }

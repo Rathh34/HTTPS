@@ -31,7 +31,7 @@ void AHTTPSCameraPawn::Tick(float DeltaTime)
 
 void AHTTPSCameraPawn::MoveCamera(FVector2D Direction, float DeltaTime)
 {
-	// rotate input by yaw so WASD always moves relative to camera facing
+	// rotate input by yaw so WASD stays relative to camera facing
 	const float Yaw = SpringArm->GetComponentRotation().Yaw;
 	FVector WorldDir = FRotator(0.f, Yaw, 0.f).RotateVector(FVector(Direction.Y, Direction.X, 0.f));
 	AddActorWorldOffset(WorldDir * MoveSpeed * DeltaTime);
@@ -44,7 +44,7 @@ void AHTTPSCameraPawn::ZoomCamera(float Value)
 
 void AHTTPSCameraPawn::RotateCamera(FVector2D MouseDelta)
 {
-	// yaw on root keeps move direction consistent after rotating
+	// yaw on root keeps MoveCamera direction consistent after rotating
 	FRotator NewRot = GetActorRotation();
 	NewRot.Yaw += MouseDelta.X * RotateSpeed;
 	SetActorRotation(NewRot);

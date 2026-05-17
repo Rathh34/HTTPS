@@ -4,16 +4,13 @@
 #include "BuildingBase.h"
 #include "HousingBuilding.generated.h"
 
-// no workers needed, just raises the population cap
+// prefab, immeuble, gratte-ciel all use this — capacity driven by data asset
 UCLASS()
 class HTTPS_API AHousingBuilding : public ABuildingBase
 {
 	GENERATED_BODY()
 
-public:
-	AHousingBuilding();
-
-	// @note: not yet wired into ColonistSpawner arrival cap
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Housing")
-	int32 HousingCapacity = 20;
+protected:
+	virtual void OnOperational() override;
+	virtual void EndPlay(const EEndPlayReason::Type Reason) override;
 };

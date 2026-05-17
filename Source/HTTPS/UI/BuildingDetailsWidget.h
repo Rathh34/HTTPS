@@ -5,35 +5,36 @@
 #include "BuildingDetailsWidget.generated.h"
 
 class ABuildingBase;
-class AWorkforceManager;
 
-// shown on building click — hidden by default
+// shown when player clicks a building — hidden by default
 UCLASS()
 class HTTPS_API UBuildingDetailsWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadWrite)
-	TObjectPtr<AWorkforceManager> WorkforceManager;
-
 	UFUNCTION(BlueprintCallable)
 	void ShowBuilding(ABuildingBase* Building);
 
 	UFUNCTION(BlueprintCallable)
 	void Hide();
 
+	// assign one more drone from idle pool
 	UFUNCTION(BlueprintCallable)
-	void AssignWorker();
+	void AssignDrone();
 
+	// remove one drone and return it to idle pool
 	UFUNCTION(BlueprintCallable)
-	void UnassignWorker();
+	void UnassignDrone();
+
+	// toggle energy on/off for this building
+	UFUNCTION(BlueprintCallable)
+	void ToggleEnergy();
 
 	UFUNCTION(BlueprintPure)
 	ABuildingBase* GetSelectedBuilding() const { return SelectedBuilding.Get(); }
 
 protected:
-	// BP updates health bar, worker count etc when called
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnBuildingSet(ABuildingBase* Building);
 

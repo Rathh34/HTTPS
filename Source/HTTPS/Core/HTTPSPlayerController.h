@@ -64,9 +64,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<UMainHUDWidget> MainHUDWidget;
 
-	bool bIsSelecting = false;
 	bool bIsRotating  = false;
-	FVector2D SelectionStart;
+	bool bIsSelecting = false;
 	FVector2D CameraMoveInput;
 	FVector2D LastMousePos; // rotation polls delta in Tick
+	FVector2D SelectionStart;
 };

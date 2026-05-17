@@ -3,4 +3,4 @@
 #include "HTTPS.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, HTTPS, "HTTPS" );
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, HTTPS, "HTTPS");

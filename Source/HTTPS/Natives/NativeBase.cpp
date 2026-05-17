@@ -1,28 +1,31 @@
 #include "NativeBase.h"
+#include "HealthComponent.h"
+#include "HTTPSGameInstance.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ANativeBase::ANativeBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComp"));
+	HealthComp->MaxHealth = 10.f;
+
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 }
 
 void ANativeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	CurrentHealth = Data.MaxHealth;
+	HealthComp->OnDied.AddDynamic(this, &ANativeBase::OnDied);
 }
 
-void ANativeBase::ApplyDamage_Implementation(float Amount, AActor* DamageSource)
+void ANativeBase::OnDied()
 {
-	if (!IsAlive_Implementation()) return;
+	// register kill for missions before destroy
+	if (UHTTPSGameInstance* GI = GetGameInstance<UHTTPSGameInstance>())
+		GI->RegisterAlienKill();
 
-	CurrentHealth = FMath::Max(0.f, CurrentHealth - Amount);
+	// cadavre drops handled here — TODO: spawn collectible or auto-add
+	if (UHTTPSGameInstance* GI = GetGameInstance<UHTTPSGameInstance>())
+		GI->AddResource(EResourceType::CadavreAlien, 1.f);
 
-	if (CurrentHealth <= 0.f)
-		Die();
-}
-
-void ANativeBase::Die()
-{
-	OnDied.Broadcast(this);
-	SetLifeSpan(2.f); // give BP time to play death anim before destroy
+	SetLifeSpan(2.f); // give BP time for death anim
 }

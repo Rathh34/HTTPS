@@ -11,4 +11,10 @@ class HTTPS_API AHTTPSGameMode : public AGameModeBase
 
 public:
 	AHTTPSGameMode();
+
+	virtual void BeginPlay() override;
+
+	// win condition — 1 million population
+	UPROPERTY(EditAnywhere, Category = "Win")
+	int32 WinPopulation = 1000000;
 };

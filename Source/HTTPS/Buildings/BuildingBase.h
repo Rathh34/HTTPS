@@ -2,25 +2,26 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Interfaces/IDamageable.h"
+#include "BuildingData.h"
 #include "BuildingBase.generated.h"
 
-class AColonist;
+class UHealthComponent;
+class UDroneComponent;
+class UEnergyComponent;
+class UHTTPSGameInstance;
 
 UENUM(BlueprintType)
 enum class EBuildingState : uint8
 {
 	Constructing,
 	Operational,
-	Damaged,
 	Destroyed
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuildingStateChanged, EBuildingState, NewState);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWorkerChanged, AColonist*, Colonist, bool, bAssigned);
 
 UCLASS(Abstract)
-class HTTPS_API ABuildingBase : public AActor, public IDamageable
+class HTTPS_API ABuildingBase : public AActor
 {
 	GENERATED_BODY()
 
@@ -28,52 +29,54 @@ public:
 	ABuildingBase();
 
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
+	virtual void EndPlay(const EEndPlayReason::Type Reason) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building")
-	float MaxHealth = 200.f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UHealthComponent> HealthComp;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building")
-	int32 MaxWorkers = 1;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UDroneComponent> DroneComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UEnergyComponent> EnergyComp;
+
+	// set per subclass in constructor — editor also shows it
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building")
-	float PowerConsumption = 5.f;
+	TObjectPtr<UBuildingData> BuildingData;
 
 	UPROPERTY(BlueprintReadOnly)
 	EBuildingState State = EBuildingState::Constructing;
 
 	UPROPERTY(BlueprintReadOnly)
-	float CurrentHealth = 200.f;
+	FIntPoint GridOrigin = FIntPoint::ZeroValue;
+
+	// set on placement, includes rotation
+	UPROPERTY(BlueprintReadOnly)
+	FIntPoint GridFootprint = FIntPoint(1, 1);
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bRotated = false;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnBuildingStateChanged OnStateChanged;
 
-	UPROPERTY(BlueprintAssignable)
-	FOnWorkerChanged OnWorkerChanged;
-
 	UFUNCTION(BlueprintCallable)
-	bool AssignWorker(AColonist* Colonist);
-
-	UFUNCTION(BlueprintCallable)
-	void RemoveWorker(AColonist* Colonist);
-
-	UFUNCTION(BlueprintPure)
-	int32 GetWorkerCount() const { return AssignedWorkers.Num(); }
+	void SetOperational();
 
 	UFUNCTION(BlueprintPure)
 	bool IsOperational() const { return State == EBuildingState::Operational; }
 
-	// IDamageable
-	virtual void ApplyDamage_Implementation(float Amount, AActor* DamageSource) override;
-	virtual float GetCurrentHealth_Implementation() const override { return CurrentHealth; }
-	virtual bool IsAlive_Implementation() const override { return State != EBuildingState::Destroyed; }
+	// called by placement system after spawn
+	UFUNCTION(BlueprintCallable)
+	void OnPlaced(FIntPoint Origin, bool bInRotated);
 
 protected:
-	UPROPERTY()
-	TArray<TObjectPtr<AColonist>> AssignedWorkers;
-
 	void SetState(EBuildingState NewState);
 
-	// override for production logic
-	virtual void OnOperationalTick(float DeltaTime) {}
+	// override in subclasses for building-specific operational logic
+	virtual void OnOperational() {}
+
+private:
+	UFUNCTION()
+	void OnDied();
 };
